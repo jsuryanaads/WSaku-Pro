@@ -1,0 +1,2 @@
+-- WSaku Pro database starts clean.
+-- Application tables will be designed and added in the next database phase.
