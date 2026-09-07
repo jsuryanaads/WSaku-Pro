@@ -15,7 +15,7 @@ export async function updateProfile(userId, fullName) {
 
 export async function updateMemberRole(workspaceId, userId, role) {
   if (!['admin', 'user'].includes(role)) throw new Error('Role tidak valid.')
-  const { error } = await supabase.from('workspace_members').update({ role }).eq('workspace_id', workspaceId).eq('user_id', userId)
+  const { error } = await supabase.rpc('set_workspace_member_role', { p_workspace_id: workspaceId, p_user_id: userId, p_role: role })
   if (error) throw error
 }
 
