@@ -7,6 +7,7 @@ export async function getDashboardData(userId) {
     .from('workspace_members')
     .select('workspace_id, role, workspaces(id, name, workspace_type)')
     .eq('user_id', userId)
+    .eq('is_active', true)
     .order('created_at', { ascending: true })
 
   if (membershipError) throw membershipError
@@ -18,7 +19,7 @@ export async function getDashboardData(userId) {
     supabase.from('cash_accounts').select('*').eq('workspace_id', workspace.id).eq('is_active', true).order('name'),
     supabase.from('account_balances').select('id,current_balance').eq('workspace_id', workspace.id).eq('is_active', true),
     supabase.from('transactions').select('*, categories(name), cash_accounts(name)').eq('workspace_id', workspace.id).order('transaction_date', { ascending: false }).order('created_at', { ascending: false }).limit(100),
-    supabase.from('transfers').select('*, from_account:cash_accounts!transfers_from_account_id_fkey(name), to_account:cash_accounts!transfers_to_account_id_fkey(name)').eq('workspace_id', workspace.id).order('transaction_date', { ascending: false }).limit(50),
+    supabase.from('transfers').select('*, from_account:cash_accounts!transfers_from_account_id_fkey(name), to_account:cash_accounts!transfers_to_account_id_fkey(name)').eq('workspace_id', workspace.id).order('transaction_date', { ascending: false }).order('created_at', { ascending: false }).limit(50),
   ])
 
   if (accountsRes.error) throw accountsRes.error
