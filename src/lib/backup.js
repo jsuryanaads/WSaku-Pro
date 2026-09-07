@@ -21,6 +21,15 @@ export async function createWorkspaceBackup(userId) {
   return { schema_version: 1, app: 'WSaku Pro', exported_at: new Date().toISOString(), workspace: workspace.data, accounts: accounts.data ?? [], categories: categories.data ?? [], transactions: transactions.data ?? [], transfers: transfers.data ?? [], members: members.data ?? [] }
 }
 
+export async function restoreWorkspaceBackup(userId, backup) {
+  if (!backup || backup.app !== 'WSaku Pro' || backup.schema_version !== 1) throw new Error('File backup WSaku Pro tidak valid atau versinya tidak didukung.')
+  if (!backup.workspace?.id) throw new Error('Backup tidak memiliki identitas workspace.')
+  const currentId = await workspaceId(userId)
+  const { data, error } = await supabase.rpc('restore_workspace_data', { p_workspace_id: currentId, p_accounts: backup.accounts ?? [], p_categories: backup.categories ?? [], p_transactions: backup.transactions ?? [], p_transfers: backup.transfers ?? [] })
+  if (error) throw error
+  return data
+}
+
 export function downloadJson(data, filename) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' })
   const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url)
