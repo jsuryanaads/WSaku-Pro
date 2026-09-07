@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
 
 async function getWorkspaceId(userId) {
-  const { data, error } = await supabase.from('workspace_members').select('workspace_id').eq('user_id', userId).order('created_at').limit(1).single()
+  const { data, error } = await supabase.from('workspace_members').select('workspace_id').eq('user_id', userId).eq('is_active', true).order('created_at').limit(1).single()
   if (error) throw error
   return data.workspace_id
 }
